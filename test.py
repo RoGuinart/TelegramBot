@@ -34,13 +34,13 @@ elements = {
 	"heat+water": "steam",
 	"air+fire": "smoke",
 	"air+water":"cloud",
-    "earth+water":"mud",
-    "mud+fire":"brick",
 	"cloud+water": "rain",
 	"earth+rain": "plant",
     "earth+earth":"land",
     "brick+brick":"wall",
     "wall+wall":"house",
+    "earth+water":"mud",
+    "mud+fire":"brick",
     "house+house":"village",
     "village+village":"city",
     "city+city":"country",
@@ -96,7 +96,20 @@ elements = {
     "chicken+egg":"philosphy",
     "philosphy+philosphy":"idea",
     "fish+egg":"roe",
-    
+    "fish+horse":"seahorse",
+    "horse+bird":"pegasus",
+    "fish+bird":"flyingfish",
+    "horse+water":"hippo",
+    "cow+water":"milk",
+    "fire+cow":"steak",
+    "steak+heat":"jerky",
+    "fire+bird":"phoenix",
+    "fire+egg":"omelette",
+    "bird+water":"duck",
+    "duck+metal":"airplane",
+    "seahorse+philosofy":"small",
+    "small+bird":"hummingbird",
+    "bird+metal":"airplane",  
 }
 
 
@@ -185,7 +198,218 @@ def element(update, context):
                 context.bot.send_photo(update.message.chat_id, photo=open('Elementos/rain.jpg','rb'))
             elif context.args[0]=='plant':
                 update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))                
+            elif context.args[0]=='land':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
                 context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='wall':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='house':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='mud':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='brick':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='village':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='city':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='country':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='continent':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='lake':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='heat':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='sea':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='ocean':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='dam':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='planet':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='sun':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='rainbow':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='river':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='primordialsoup':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='bacteria':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='life':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='energy':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='earthquake':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='plankton':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='pressure':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='wind':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='tornado':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='farm':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='hurricane':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='waves':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='obsidian':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='rock':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='metal':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='plow':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='field':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='barn':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='smog':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='warmth':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='solarcell':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='solarsystem':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='galaxy':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='galaxycluster':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='universe':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='plasma':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='animal':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='soil':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='fish':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='livestock':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='cow':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='horse':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='manatee':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='bird':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='egg':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='chicken':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='philosophy':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='idea':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='roe':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='seahorse':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='pegasus':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='flyingfish':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='hippo':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='milk':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='steak':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='jerky':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='phoenix':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='omelette':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='duck':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='airplane':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='small':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            elif context.args[0]=='hummingbird':
+                update.message.reply_text("Plant is an element combination of earth and water element.\nThe water combined with the soil of earth makes the plant grow strong and develop strong roots. When it fully grows it starts doing the photosynthesis and as a consequence the air element renovates itself, making it almost infinite.")
+                context.bot.send_photo(update.message.chat_id, photo=open('Elementos/plant.jpg','rb'))
+            
             
             
         else:
@@ -206,8 +430,7 @@ def help(update, context):
         update.message.reply_text("FMA Bot no está activado")
 
 def main():
-    #TOKEN="5672783109:AAHPI7aGzq1cYIbFHZzA9x2FeaLkyl0Yl3s"
-    TOKEN="5491139231:AAFnIXg9PioSi3d8j-csypLiH-X-RgsvTXQ"
+    TOKEN="5711933178:AAEKfTXFbV_WJ9JQIVGJAYX_EepnReYLAnM"
     updater=Updater(TOKEN, use_context=True)
     
     dp=updater.dispatcher
