@@ -41,7 +41,7 @@ elements = {
     "river+wall":"dam",
     "continent+ocean":"planet",
     "planet+fire":"sun",
-    "sun+water":"rainbow",
+    "sun+rain":"rainbow",
     "water+rain":"river",
     "planet+ocean":"primordialsoup",
     "planet+sea":"primordialsoup",
@@ -67,7 +67,7 @@ elements = {
     "heat+air":"warmth",
     "energy+sun":"solarcell",
     "earth+plow":"field",
-    "plane+planet":"solarsystem",
+    "airplane+planet":"solarsystem",
     "solarsystem+solarsystem":"galaxy",
     "galaxy+galaxy":"galaxycluster",
     "galaxycluster+galaxycluster":"universe",
@@ -97,7 +97,7 @@ elements = {
     "fire+egg":"omelette",
     "bird+water":"duck",
     "duck+metal":"airplane",
-    "seahorse+philosofy":"small",
+    "seahorse+philosophy":"small",
     "small+bird":"hummingbird",
     "bird+metal":"airplane",
     "ocean+fish":"shark",
@@ -157,7 +157,31 @@ def main():
     if(not error):
         connection.commit()
     
+def updateDescription():
+    for element in elements.values():
+        if(selectOne(f"SELECT Description FROM Elements WHERE ElementName = '{element}';") == None):
+            c1 = selectOne(f"SELECT E.ElementName FROM Elements E JOIN Combinations C ON E.ElementID = C.Element1ID WHERE ResultingElement = (SELECT ElementID FROM Elements WHERE ElementName = '{element}');")
+            c2 = selectOne(f"SELECT E.ElementName FROM Elements E JOIN Combinations C ON E.ElementID = C.Element2ID WHERE ResultingElement = (SELECT ElementID FROM Elements WHERE ElementName = '{element}');")
+            if(c1 == None or c2 == None):
+                continue
+            elif(c1 == c2):
+                description=f"{upperCase(element)} is the combination of {c1} with itself."
+            else:
+                description=f"{upperCase(element)} is made from {c1} and {c2}."
+            sqlQuery(f"UPDATE Elements SET Description='{description}' WHERE ElementName='{element}'")
+            print(f"{element} done")
+    print("FINISH")
+    connection.commit()
 
+def upperCase(str):
+    newStr = ""
+    newStr+=str.upper()[0]
+    i = 1
+    while(i < len(str)):
+        newStr+=str[i]
+        i+=1
+    return newStr
+        
 def selectOne(query):
     
             cursor.execute(query)
@@ -171,7 +195,6 @@ def selectOne(query):
 
 def sqlQuery(query):
     cursor.execute(query)
-    connection.commit()
 
 
 
@@ -180,3 +203,4 @@ if __name__ == "__main__":
     with connection:
         with connection.cursor() as cursor:
             main()
+            updateDescription()

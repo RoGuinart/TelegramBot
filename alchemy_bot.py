@@ -3,9 +3,6 @@
 Bot para telegram
 '''
 from multiprocessing import context
-import random
-from select import select
-from telegram import (ParseMode)
 from telegram.ext import (Updater, CommandHandler)
 
 #Database
@@ -41,13 +38,22 @@ def checkCombination(update, context):
 	try:
 		e1ID = selectOne(f"SELECT ElementID FROM Elements WHERE ElementName = '{context.args[0].lower()}'")
 		e2ID = selectOne(f"SELECT ElementID FROM Elements WHERE ElementName = '{context.args[1].lower()}'")
-		if(not checkUnlockedElement(update.message.chat.username, e1ID)):
-			update.message.reply_text(f"Error: l'element {context.args[0]} no existeix o no s'ha desbloquejat.")
+
+		#Si l'element no existeix
+		if(e1ID == None):
+			update.message.reply_text(f"Error: l'element {context.args[0]} és invàlid.")
 			return
-		elif (not checkUnlockedElement(update.message.chat.username, e2ID)):
-			update.message.reply_text(f"Error: l'element {context.args[1]} no existeix o no s'ha desbloquejat.")
+		if(e2ID == None):
+			update.message.reply_text(f"Error: l'element {context.args[1]} és invàlid.")
 			return
 
+		#Si l'element no s'ha desbloquejat
+		if(not checkUnlockedElement(update.message.chat.username, e1ID)):
+			update.message.reply_text(f"Error: l'element {context.args[0]} no està disponible.")
+			return
+		elif (not checkUnlockedElement(update.message.chat.username, e2ID)):
+			update.message.reply_text(f"Error: l'element {context.args[1]} no està disponible.")
+			return
 
 		
 		resultID = selectOne(f"SELECT ResultingElement FROM Combinations WHERE Element1ID = {e1ID} AND Element2ID = {e2ID}")
@@ -61,18 +67,11 @@ def checkCombination(update, context):
 		result = selectOne(f"SELECT ElementName FROM Elements WHERE ElementID = {resultID}")
 		if(unlockElement(update.message.chat.username, resultID)):
 			update.message.reply_text(f"Nou element descobert! {context.args[0]} + {context.args[1]} = {result}")
+			context.bot.send_photo(update.message.chat_id, photo=open(f'img/{result}.jpg','rb'))
 		else:
 			update.message.reply_text(f"{context.args[0]} + {context.args[1]} = {result}\nJa havies desbloquejat l'element anteriorment!")
 	except:
 		update.message.reply_text(f"Error: no s'ha pogut establir connexió amb la base de dades.\nTorna a intentar.")
-
-
-def getElementDescription(elementName):
-    description = selectOne(f"SELECT Description FROM Elements WHERE ElementName LIKE '{elementName}'")
-    return description
-
-
-
 
 
 def unlockElement(user, elementID):
@@ -109,7 +108,7 @@ def unlockedElementsList(update, context):
 	for dict in list:
 		for element in dict.values(): 
 			if(i == 25): #Com a molt, s'enviaran 25 elements en un sol missatge.
-				update.message.reply_text(f"{j}. {string}")
+				update.message.reply_text(f"{string}")
 				i = 0
 				string = ""
 			string+= f"{j}. {element}\n"
@@ -117,6 +116,23 @@ def unlockedElementsList(update, context):
 			j+=1
 
 	update.message.reply_text(f"{string}")
+
+
+def elementDescription(update, context):
+	if(len(context.args) != 1):
+		update.message.reply_text("Escriu un element:\n/description <element>")
+		return
+	
+	description=selectOne(f"SELECT Description FROM Elements WHERE ElementName='{context.args[0]}'")
+	if(description == None):
+		update.message.reply_text("Element invàlid.")
+	else:
+		if(selectOne(f"SELECT * FROM UnlockedElements WHERE UserID='{update.message.chat.username}' AND ElementID=(SELECT ElementID FROM Elements WHERE ElementName='{context.args[0]}')") != None):
+			update.message.reply_text(description)
+			context.bot.send_photo(update.message.chat_id, photo=open(f'img/{context.args[0]}.jpg','rb'))
+		else:
+			update.message.reply_text("Element no disponible.")
+
 
 def start(update, context):
 	''' 
@@ -144,7 +160,7 @@ def getName(update):
 	first_name = update.message.chat.first_name if update.message.chat.first_name != None else ""
 	last_name = update.message.chat.last_name if update.message.chat.last_name != None else ""
 
-	if(first_name != "" and last_name != ""): # És a dir, si algun no existeix
+	if(first_name != "" and last_name != ""): # És a dir, si tots dos existeixen
 		first_name += " "
 
 	return first_name+last_name
@@ -178,6 +194,8 @@ def deleteAccount(update, context):
 			sqlQuery(f"DELETE FROM UnlockedElements WHERE UserID = '{update.message.chat.username}'")
 			connection.commit()
 			update.message.reply_text("Compte esborrat correctament.")
+		else:
+			update.message.reply_text(f"Estàs segur que vols borrat el teu progrés?\nEscriu /deleteAccount {update.message.chat.username} per confirmar.")
 	else:
 		update.message.reply_text(f"Estàs segur que vols borrat el teu progrés?\nEscriu /deleteAccount {update.message.chat.username} per confirmar.")
 
@@ -226,8 +244,12 @@ def main():
 	# Eventos que activarán nuestro bot.
 	# /comandos
 	dp.add_handler(CommandHandler('start',	start))
+	dp.add_handler(CommandHandler('combine',	checkCombination))
 	dp.add_handler(CommandHandler('combination',	checkCombination))
+	dp.add_handler(CommandHandler('describe',	elementDescription))
+	dp.add_handler(CommandHandler('description',	elementDescription))
 	dp.add_handler(CommandHandler('listElements',	unlockedElementsList))
+	dp.add_handler(CommandHandler('elementList',	unlockedElementsList))
 	dp.add_handler(CommandHandler('deleteAccount',	deleteAccount))
 	dp.add_handler(CommandHandler('help',	help))
 
