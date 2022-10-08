@@ -1,106 +1,139 @@
 # -*- coding: utf-8 -*-
 '''
-Bot para telegram
+	FMAlchemyBot
 '''
 from multiprocessing import context
 from telegram.ext import (Updater, CommandHandler)
 
-#Database
+# Database
 from sqlite3 import connect
 import pymysql.cursors
 
-# [Opcional] Recomendable poner un log con los errores que apareceran por pantalla.
+# Per comprovar si existeix la imatge de l'element
+from os.path import exists
+
+# Error logs
 import logging
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-connection = pymysql.connect(host='remotemysql.com',
-                                 user='tz4WJ4N0x7',
-                                 password='Tp3GJnuEIf',
-                                 database='tz4WJ4N0x7',
-                                 cursorclass=pymysql.cursors.DictCursor)
-cursor = connection.cursor()
 
-
-def error_callback(update, context):
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 def checkCombination(update, context):
 	'''
 		Comprova si la combinació de l'usuari és possible.
 		Si ho és, desbloqueja l'element resultant, si no s'havia desbloquejat abans.
 	'''
+	connection = pymysql.connect(host='remotemysql.com',
+									user='tz4WJ4N0x7',
+									password='Tp3GJnuEIf',
+									database='tz4WJ4N0x7',
+									cursorclass=pymysql.cursors.DictCursor)
+	cursor = connection.cursor()
+	if(not userExists(cursor, update.message.chat.username)): # User does not exist
+		update.message.reply_text("Error: l'usuari no existeix. Fes servir /start per crear un nou usuari.")
+		closeConnection(connection, cursor)
+		return
+
 	
 	if(len(context.args) != 2):
 		update.message.reply_text("Entra dos elements:\n/combination <element> <element>")
+		closeConnection(connection, cursor)
 		return
 
 	try:
-		e1ID = selectOne(f"SELECT ElementID FROM Elements WHERE ElementName = '{context.args[0].lower()}'")
-		e2ID = selectOne(f"SELECT ElementID FROM Elements WHERE ElementName = '{context.args[1].lower()}'")
+		e1ID = selectOne(cursor, f"SELECT ElementID FROM Elements WHERE ElementName = '{context.args[0].lower()}'")
+		e2ID = selectOne(cursor, f"SELECT ElementID FROM Elements WHERE ElementName = '{context.args[1].lower()}'")
+
 
 		#Si l'element no existeix
 		if(e1ID == None):
 			update.message.reply_text(f"Error: l'element {context.args[0]} és invàlid.")
+			closeConnection(connection, cursor)
 			return
 		if(e2ID == None):
 			update.message.reply_text(f"Error: l'element {context.args[1]} és invàlid.")
+			closeConnection(connection, cursor)
 			return
 
 		#Si l'element no s'ha desbloquejat
-		if(not checkUnlockedElement(update.message.chat.username, e1ID)):
+		if  (not checkUnlockedElement(update.message.chat.username, e1ID, cursor)):
 			update.message.reply_text(f"Error: l'element {context.args[0]} no està disponible.")
+			closeConnection(connection, cursor)
 			return
-		elif (not checkUnlockedElement(update.message.chat.username, e2ID)):
+		elif(not checkUnlockedElement(update.message.chat.username, e2ID, cursor)):
 			update.message.reply_text(f"Error: l'element {context.args[1]} no està disponible.")
+			closeConnection(connection, cursor)
 			return
 
 		
-		resultID = selectOne(f"SELECT ResultingElement FROM Combinations WHERE Element1ID = {e1ID} AND Element2ID = {e2ID}")
+		resultID = selectOne(cursor, f"SELECT ResultingElement FROM Combinations WHERE Element1ID = {e1ID} AND Element2ID = {e2ID}")
 		if resultID == None:
-			resultID = selectOne(f"SELECT ResultingElement FROM Combinations WHERE Element1ID = {e2ID} AND Element2ID ={e1ID}")
+			resultID = selectOne(cursor, f"SELECT ResultingElement FROM Combinations WHERE Element1ID = {e2ID} AND Element2ID ={e1ID}")
 			if resultID == None:
 				update.message.reply_text(f"Combinació invàlida.")
+				closeConnection(connection, cursor)
 				return
 
-
-		result = selectOne(f"SELECT ElementName FROM Elements WHERE ElementID = {resultID}")
-		if(unlockElement(update.message.chat.username, resultID)):
+		result = selectOne(cursor, f"SELECT ElementName FROM Elements WHERE ElementID = {resultID}")
+		if(unlockElement(cursor, update.message.chat.username, resultID)):
 			update.message.reply_text(f"Nou element descobert! {context.args[0]} + {context.args[1]} = {result}")
-			context.bot.send_photo(update.message.chat_id, photo=open(f'img/{result}.jpg','rb'))
+			if(exists(f'img/{context.args[0]}.jpg')):
+				context.bot.send_photo(update.message.chat_id, photo=open(f'img/{result}.jpg','rb'))
 		else:
 			update.message.reply_text(f"{context.args[0]} + {context.args[1]} = {result}\nJa havies desbloquejat l'element anteriorment!")
 	except:
-		update.message.reply_text(f"Error: no s'ha pogut establir connexió amb la base de dades.\nTorna a intentar.")
+		update.message.reply_text(f"Error desconegut.\nTorna-ho a intentar.")
+
+	connection.commit()
+	closeConnection(connection, cursor)
 
 
-def unlockElement(user, elementID):
-	if(checkUnlockedElement(user, elementID)): #Si l'usuari ja ha desbloquejat l'element
+def unlockElement(cursor, user, elementID):
+	'''
+		Si l'usuari user no ha desbloquejat l'element elementID, s'afegeix a la seva llista d'elements desbloquejats.
+	'''
+	if(checkUnlockedElement(user, elementID, cursor)): #Si l'usuari ja ha desbloquejat l'element
 		return False
 	else: #Si l'usuari no té l'element
-		sqlQuery(f"INSERT INTO UnlockedElements(UserID, ElementID) VALUES('{user}', {elementID})")
-		connection.commit()
+		userID = selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{user}'")
+		sqlQuery(cursor, f"INSERT INTO UnlockedElements(UserID, ElementID) VALUES('{userID}', {elementID})")
 		return True
 
-def checkUnlockedElement(user, elementID):
-	isUnlocked = selectOne(f"SELECT ElementID FROM UnlockedElements WHERE UserID = '{user}' AND ElementID = {elementID}")
-	if(isUnlocked == None):
-		return False
-	else:
-		return True
+def checkUnlockedElement(user, elementID, cursor):
+	'''
+		Comprova si l'usuari user ha desbloquejat l'element elementID.
+	'''
+	userID = selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{user}'")
+	isUnlocked = selectOne(cursor, f"SELECT ElementID FROM UnlockedElements WHERE UserID = '{userID}' AND ElementID = {elementID}")
+	return isUnlocked == None
 
 def unlockedElementsList(update, context):
-	createUser(update) #En el cas (poc comú) en que no existeixi usuari, es crea. Si ja existeix, no fa res.
+	'''
+		Llista els elements desbloquejats per l'usuari que ha escrit la comanda
+	'''
+	connection = pymysql.connect(host='remotemysql.com',
+									user='tz4WJ4N0x7',
+									password='Tp3GJnuEIf',
+									database='tz4WJ4N0x7',
+									cursorclass=pymysql.cursors.DictCursor)
+	cursor = connection.cursor()
+
+	if(not userExists(cursor, update.message.chat.username)): # User does not exist
+		update.message.reply_text("Error: l'usuari no existeix. Fes servir /start per crear un nou usuari.")
+		return
 
 
-	totalElements = selectOne("SELECT COUNT(*) FROM Elements")
-	unlockedElems = selectOne(f"SELECT COUNT(*) FROM UnlockedElements WHERE UserID = '{update.message.chat.username}'")
-	percentatge = round(unlockedElems / totalElements * 100,2)
+	userID = selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{update.message.chat.username}'")
+	totalElements = selectOne(cursor, "SELECT COUNT(*) FROM Elements")
+	unlockedElems = selectOne(cursor, f"SELECT COUNT(*) FROM UnlockedElements WHERE UserID = '{userID}'")
+	percentatge = round(unlockedElems / totalElements * 100, 2)
 
 	update.message.reply_text(f"Has desbloquejat {unlockedElems} de {totalElements} elements. ({percentatge}%):")
 
 
-	list = selectAll(f"SELECT E.ElementName FROM Elements E JOIN UnlockedElements UE ON E.ElementID = UE.ElementID WHERE UE.UserID = '{update.message.chat.username}'")
+	list = selectAll(cursor, f"SELECT E.ElementName FROM Elements E JOIN UnlockedElements UE ON E.ElementID = UE.ElementID WHERE UE.UserID = '{userID}'")
 	
 	string = ""
 	i=0 #Compta els elements per missatge (max 25)
@@ -119,20 +152,38 @@ def unlockedElementsList(update, context):
 
 
 def elementDescription(update, context):
+	'''
+		Envia la descripció de l'element que l'usuari especifica, sempre que aquest element estigui desbloquejat.
+	'''
+
 	if(len(context.args) != 1):
 		update.message.reply_text("Escriu un element:\n/description <element>")
 		return
 	
-	description=selectOne(f"SELECT Description FROM Elements WHERE ElementName='{context.args[0]}'")
+	connection = pymysql.connect(host='remotemysql.com',
+								 user='tz4WJ4N0x7',
+								 password='Tp3GJnuEIf',
+								 database='tz4WJ4N0x7',
+								 cursorclass=pymysql.cursors.DictCursor)
+	cursor = connection.cursor()
+
+	description=selectOne(cursor, f"SELECT Description FROM Elements WHERE ElementName='{context.args[0]}'")
 	if(description == None):
 		update.message.reply_text("Element invàlid.")
 	else:
-		if(selectOne(f"SELECT * FROM UnlockedElements WHERE UserID='{update.message.chat.username}' AND ElementID=(SELECT ElementID FROM Elements WHERE ElementName='{context.args[0]}')") != None):
+		userID = selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{update.message.chat.username}'")
+		if(selectOne(cursor, f"SELECT * FROM UnlockedElements WHERE UserID = '{userID}' AND ElementID=(SELECT ElementID FROM Elements WHERE ElementName='{context.args[0]}')") != None):
 			update.message.reply_text(description)
-			context.bot.send_photo(update.message.chat_id, photo=open(f'img/{context.args[0]}.jpg','rb'))
+			
+			if(exists(f'img/{context.args[0]}.jpg')):
+				context.bot.send_photo(update.message.chat_id, photo=open(f'img/{context.args[0]}.jpg','rb'))
 		else:
 			update.message.reply_text("Element no disponible.")
 
+	closeConnection(connection, cursor)
+
+	
+	
 
 def start(update, context):
 	''' 
@@ -141,22 +192,37 @@ def start(update, context):
 		Quan es crea un usuari nou, automàticament desbloqueja els quatre elements bàsics. 
 	 '''
 
-	username = selectOne(f"SELECT Username FROM Users WHERE UserID = '{update.message.chat.username}'")
-	if username == None: #Si l'usuari no existeix
-		createUser(update)
+	
+	connection = pymysql.connect(host='remotemysql.com',
+								 user='tz4WJ4N0x7',
+								 password='Tp3GJnuEIf',
+								 database='tz4WJ4N0x7',
+								 cursorclass=pymysql.cursors.DictCursor)
+	cursor = connection.cursor()
+
+	userID = selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{update.message.chat.username}'")
+	if userID == None: #Si l'usuari no existeix
+		createUser(cursor, update)
 		
-		username = selectOne(f"SELECT Username FROM Users WHERE UserID = '{update.message.chat.username}'")
-		update.message.reply_text(f"Benvingut, {username}!")
+		username = selectOne(cursor, f"SELECT UsernameFull FROM Users WHERE UsernameAt = '{update.message.chat.username}'")
+		update.message.reply_text(f"Benvingut/da, {username}!\nEscriu /help per veure una llista de comandes.")
+		print(f"User {username} created")
 		
 	else: #Si l'usuari ja existeix
 		if username != getName(update):
 			username = getName(update)
-			sqlQuery(f"UPDATE Users SET Username='{username}' WHERE UserID = '{update.message.chat.username}');")
+			sqlQuery(cursor, f"UPDATE Users SET UsernameFull='{username}' WHERE UsernameAt = '{update.message.chat.username}');")
 			connection.commit()
-		update.message.reply_text(f"Benvingut de nou, {username}!")
+		update.message.reply_text(f"Benvingut/da de nou, {username}!")
+	
+	connection.commit()
+	closeConnection(connection, cursor)
 	
 
 def getName(update):
+	'''
+		Obté el nom de l'usuari. Comprova si hi ha cognom i dóna bon format. Per exemple, evita retornar "Roger " o "IkerSanchez"; seria "Roger" i "Iker Sanchez"
+	'''
 	first_name = update.message.chat.first_name if update.message.chat.first_name != None else ""
 	last_name = update.message.chat.last_name if update.message.chat.last_name != None else ""
 
@@ -165,43 +231,68 @@ def getName(update):
 
 	return first_name+last_name
 
+def userExists(cursor, username):
+	'''
+		Comprova si l'usuari existeix
+	'''
+	result = selectOne(cursor, f"SELECT * FROM Users WHERE UsernameAt = '{username}'")
 
-def createUser(update):
+	return result != None
+
+
+def createUser(cursor, update):
 	'''
 		Crea un compte nou i l'hi afegeix els quatre elements bàsics.
 	'''
-	if(selectOne(f"SELECT UserID FROM Users WHERE UserID = '{update.message.chat.username}'") == None):
-		sqlQuery(f"INSERT INTO Users(UserID, Username) VALUES('{update.message.chat.username}', '{getName(update)}')")
+
+	if(selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{update.message.chat.username}'") == None):
+		sqlQuery(cursor, f"INSERT INTO Users(UsernameAt, UsernameFull) VALUES('{update.message.chat.username}', '{getName(update)}')")
 
 		#Desbloqueja els quatre elements bàsics
 		i=1
 		while (i<=4):
-			unlockElement(update.message.chat.username, i)
+			unlockElement(cursor, update.message.chat.username, i)
 			i+=1
 			
-		connection.commit()
 	else:
 		print(f"User {update.message.chat.username} already exists")
+	
 
 
 def deleteAccount(update, context):
 	'''
 		Esborra un compte de les taules Users i UnlockedElements. Si es vol tornar a crear, s'ha de cridar a createUser(update)
 	'''
+	
+	connection = pymysql.connect(host='remotemysql.com',
+								 user='tz4WJ4N0x7',
+								 password='Tp3GJnuEIf',
+								 database='tz4WJ4N0x7',
+								 cursorclass=pymysql.cursors.DictCursor)
+	cursor = connection.cursor()
+
 	if(len(context.args) == 1):
 		if(context.args[0] == update.message.chat.username):
-			sqlQuery(f"DELETE FROM Users WHERE UserID = '{update.message.chat.username}'")
-			sqlQuery(f"DELETE FROM UnlockedElements WHERE UserID = '{update.message.chat.username}'")
-			connection.commit()
+			userID = selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{update.message.chat.username}'")
+			sqlQuery(cursor, f"DELETE FROM Users WHERE UserID = '{userID}'")
+			sqlQuery(cursor, f"DELETE FROM UnlockedElements WHERE UserID = '{userID}'")
 			update.message.reply_text("Compte esborrat correctament.")
 		else:
 			update.message.reply_text(f"Estàs segur que vols borrat el teu progrés?\nEscriu /deleteAccount {update.message.chat.username} per confirmar.")
 	else:
 		update.message.reply_text(f"Estàs segur que vols borrat el teu progrés?\nEscriu /deleteAccount {update.message.chat.username} per confirmar.")
+	
+	connection.commit()
+	closeConnection(connection, cursor)
 
 
-def selectOne(query):
-    
+
+
+def selectOne(cursor, query):
+	'''
+		Executa SELECT i retorna un sol resultat.
+	'''
+
 	cursor.execute(query)
 	data = cursor.fetchone()
 	if data == None:
@@ -211,39 +302,53 @@ def selectOne(query):
 		return value
 	return None
 
-def selectAll(query):
-
+def selectAll(cursor, query):
+	'''
+		Executa SELECT i rotorna tots els resultats 
+	'''
 	cursor.execute(query)
-	data = cursor.fetchall()
-
-	if data == None:
-		return None
-	else:
-		return data
+	return cursor.fetchall()
 		
 
-def sqlQuery(query):
+def sqlQuery(cursor, query):
+	'''
+		Executa una comanda a la base de dades. NO FA COMMIT
+	'''
 	cursor.execute(query) #No commit here!
 
+def closeConnection(connection, cursor):
+	'''
+		Tanca la connexió amb la base de dades.
+	'''
+	cursor.close()
+	connection.close()
 
 
 
 
 
 def help(update, context):
-	msg = "/combination <element>  <element> | Combines two elements and checks if you've gotten a new one. Replies with your result" 
-	msg += "\n/listElements | Lists the elements you have unlocked"
-	msg += "\n/deleteAccount <yourID> | Resets all your progress"
+	'''
+		Ensenya un missatge amb totes les comandes disponibles
+	'''
+	msg = "/start || Crea un compte i et dóna la benvinguda."
+	msg += "\n/combination <element>  <element> || Combina dos elements i comprova si n'has desbloquejat un de nou."
+	msg += "\n/listElements || Llista els elements que has desbloquejat"
+	msg += "\n/describe <element> || Descriu un element"
+	msg += "\n/deleteAccount <yourID> || Escborra tot el teu progrés"
 	update.message.reply_text(msg)
 
+def error_callback(update, context):
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
+
 def main():
-	TOKEN="5672783109:AAHPI7aGzq1cYIbFHZzA9x2FeaLkyl0Yl3s"
+	TOKEN="5711933178:AAEKfTXFbV_WJ9JQIVGJAYX_EepnReYLAnM" # @FMAlchemyBot
 	updater=Updater(TOKEN, use_context=True)
 	dp=updater.dispatcher
-
-	# Eventos que activarán nuestro bot.
-	# /comandos
+	
+	# /comandes
 	dp.add_handler(CommandHandler('start',	start))
+	dp.add_handler(CommandHandler('createUser',	start))
 	dp.add_handler(CommandHandler('combine',	checkCombination))
 	dp.add_handler(CommandHandler('combination',	checkCombination))
 	dp.add_handler(CommandHandler('describe',	elementDescription))
@@ -254,11 +359,11 @@ def main():
 	dp.add_handler(CommandHandler('help',	help))
 
 	dp.add_error_handler(error_callback)
-    # Comienza el bot
 	updater.start_polling()
-    # Lo deja a la escucha. Evita que se detenga.
+    # Deixa el bot esperant comandes
+	print("FMAlchemyBot bootup successful")
 	updater.idle()
 
 if __name__ == '__main__':
-	print(('GuinartBot Starting...'))
+	print(('FMAlchemyBot Starting...'))
 	main()
