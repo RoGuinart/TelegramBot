@@ -94,18 +94,17 @@ def unlockElement(cursor, user, elementID):
 	'''
 		Si l'usuari user no ha desbloquejat l'element elementID, s'afegeix a la seva llista d'elements desbloquejats.
 	'''
-	if(checkUnlockedElement(user, elementID, cursor)): #Si l'usuari ja ha desbloquejat l'element
-		return False
-	else: #Si l'usuari no té l'element
-		userID = selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{user}'")
+	userID = selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{user}'")
+	if(checkUnlockedElement(userID, elementID, cursor)): #Si l'usuari ja ha desbloquejat l'element
 		sqlQuery(cursor, f"INSERT INTO UnlockedElements(UserID, ElementID) VALUES('{userID}', {elementID})")
 		return True
+	else: #Si l'usuari no té l'element
+		return False
 
-def checkUnlockedElement(user, elementID, cursor):
+def checkUnlockedElement(userID, elementID, cursor):
 	'''
 		Comprova si l'usuari user ha desbloquejat l'element elementID.
 	'''
-	userID = selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{user}'")
 	isUnlocked = selectOne(cursor, f"SELECT ElementID FROM UnlockedElements WHERE UserID = '{userID}' AND ElementID = {elementID}")
 	return isUnlocked == None
 
@@ -200,8 +199,9 @@ def start(update, context):
 								 cursorclass=pymysql.cursors.DictCursor)
 	cursor = connection.cursor()
 
-	userID = selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{update.message.chat.username}'")
-	if userID == None: #Si l'usuari no existeix
+	username = selectOne(cursor, f"SELECT UsernameFull FROM Users WHERE UsernameAt = '{update.message.chat.username}'") #Comprovació que existeix
+
+	if username == None: #Si l'usuari no existeix
 		createUser(cursor, update)
 		
 		username = selectOne(cursor, f"SELECT UsernameFull FROM Users WHERE UsernameAt = '{update.message.chat.username}'")
@@ -211,10 +211,8 @@ def start(update, context):
 	else: #Si l'usuari ja existeix
 		if username != getName(update):
 			username = getName(update)
-			sqlQuery(cursor, f"UPDATE Users SET UsernameFull='{username}' WHERE UsernameAt = '{update.message.chat.username}');")
-			connection.commit()
+			sqlQuery(cursor, f"UPDATE Users SET UsernameFull='{username}' WHERE UsernameAt = '{update.message.chat.username}'")
 		update.message.reply_text(f"Benvingut/da de nou, {username}!")
-	
 	connection.commit()
 	closeConnection(connection, cursor)
 	
@@ -247,12 +245,10 @@ def createUser(cursor, update):
 
 	if(selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{update.message.chat.username}'") == None):
 		sqlQuery(cursor, f"INSERT INTO Users(UsernameAt, UsernameFull) VALUES('{update.message.chat.username}', '{getName(update)}')")
+		userID = selectOne(cursor, f"SELECT UserID FROM Users WHERE UsernameAt = '{update.message.chat.username}'")
 
 		#Desbloqueja els quatre elements bàsics
-		i=1
-		while (i<=4):
-			unlockElement(cursor, update.message.chat.username, i)
-			i+=1
+		sqlQuery(cursor, f"INSERT INTO UnlockedElements(UserID, ElementID) VALUES ({userID}, 1), ({userID}, 2), ({userID}, 3), ({userID}, 4)")
 			
 	else:
 		print(f"User {update.message.chat.username} already exists")
